@@ -1,0 +1,27 @@
+import csv
+import requests
+from bs4 import BeautifulSoup
+
+response = requests.get('https://www.scrapethissite.com/pages/simple/')
+
+soup = BeautifulSoup(response.content, 'html.parser')
+
+with open('result.csv', mode='w', newline='') as csv_file:
+
+    
+    writer = csv.writer(csv_file)
+
+    writer.writerow(['Nom', 'Différentiel', 'Buts encaissés'])
+
+    product_divs = soup.find_all('div', class_='col-md-4')
+
+
+    for product_div in product_divs:
+        name = product_div.find('h3').text.strip()
+        differential = int(product_div.find('span', class_='differential').text)
+        goals_allowed = int(product_div.find('span', class_='goals-allowed').text)
+
+    
+        if differential > 0 and goals_allowed < 300:
+
+            writer.writerow([name, differential, goals_allowed])
